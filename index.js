@@ -6,19 +6,28 @@ const PORT = 3000;
 
 // 예: GET /number?value=123
 app.get("/number", (req, res) => {
-  const { value, timestamp } = req.query;
+  const { timestamp, step_count, light, heartrate, score, startTime, endTime, sleepLength, totalTime } = req.query;
 
   // 유효성 검사
-  if (!value || isNaN(value)) {
+  if (!step_count || isNaN(step_count) || !light || isNaN(light) || !heartrate || isNaN(heartrate) ||
+      !score || isNaN(score) || !sleepLength || isNaN(sleepLength) || !startTime || isNaN(startTime) ||
+      !endTime || isNaN(endTime) || !totalTime || isNaN(totalTime)) {
     return res.status(400).json({
-      error: "유효한 숫자 값을 query parameter 'value'로 전달하세요.",
-      example: "/number?value=42"
+      error: "유효한 숫자 값을 query parameter 'step_count'로 전달하세요.",
+      example: "/number?step_count=42"
     });
-  }
+  } 
 
   // 숫자로 변환
-  const stepCount = Number(value);
-  const date = new Date(Number(timestamp));
+  const stepCount = Number(step_count);
+  const light_lux = Number(light);
+  const hr = Number(heartrate);
+  const sleep_score = Number(score);  
+  const onset_time = Number(startTime);
+  const offset_time = Number(endTime);
+  const sleep_length = Number(sleepLength);
+  const time_in_bed = Number(totalTime);  
+  const date = new Date(Number(timestamp));    
 
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -29,8 +38,9 @@ app.get("/number", (req, res) => {
 
   const formatted = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   
-  console.log("날짜:", formatted);
-  console.log("걸음 수:", stepCount);
+  console.log(`날짜: ${formatted}, 걸음 수: ${stepCount}, 조도: ${light_lux}, 심박수: ${hr}
+수면점수: ${sleep_score}, 수면시간: ${sleep_length}, 총 수면시간: ${time_in_bed}
+입면시각: ${onset_time}, 기상시각: ${offset_time}`);
 
   // 결과 응답
   res.json({
